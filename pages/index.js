@@ -1,65 +1,71 @@
-import Head from 'next/head'
-import styles from '../styles/Home.module.css'
-
+import { useState, useEffect } from 'react';
 export default function Home() {
+  const [annualIncome, setAnnualIncome] = useState(100000);
+  const [payCyclesPerYear, setPayCyclesPerYear] = useState(26);
+  const [annualRetirementAmount, setAnnualRetirementAmount] = useState(19500);
+  const [contributionPercent, setContributionPercent] = useState(0);
+
+  const round = (value) => Math.round(value * 100000) / 100000;
+  const calculateContributionPercent = (annualIncome, payCyclesPerYear, annualRetirementAmount) => {
+    const incomePerPayCycle = annualIncome / payCyclesPerYear;
+    const contributionPerPayCycle = annualRetirementAmount / payCyclesPerYear;
+
+    const contributionPercent = contributionPerPayCycle / incomePerPayCycle;
+    return round(contributionPercent);
+  }
+
+  useEffect(() => {
+    const newContributionPercent = calculateContributionPercent(annualIncome, payCyclesPerYear, annualRetirementAmount);
+    setContributionPercent(newContributionPercent);
+  }, [
+    annualIncome,
+    payCyclesPerYear,
+    annualRetirementAmount
+  ])
   return (
-    <div className={styles.container}>
-      <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+    <div className="flex items-center justify-center h-screen">
+      <form>
+        <h1 className="text-2xl font-bold mb-4">401k Contribution Calculator</h1>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h3>Documentation &rarr;</h3>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/master/examples"
-            className={styles.card}
-          >
-            <h3>Examples &rarr;</h3>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-          >
-            <h3>Deploy &rarr;</h3>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
+        <div className="flex flex-col mb-4">
+          <label htmlFor="annualIncome">Annual Income</label>
+          <input
+            name="annualIncome"
+            onChange={e => setAnnualIncome(e.target.value)}
+            step="500"
+            type="number"
+            value={annualIncome}
+          />
         </div>
-      </main>
 
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel Logo" className={styles.logo} />
-        </a>
-      </footer>
-    </div>
+        <div className="flex flex-col mb-4">
+          <label htmlFor="payCyclesPerYear">Pay Cycles per Year</label>
+          <input
+            name="payCyclesPerYear"
+            onChange={e => setPayCyclesPerYear(e.target.value)}
+            type="number"
+            value={payCyclesPerYear}
+          />
+        </div>
+
+        <div className="flex flex-col mb-4">
+          <label htmlFor="annualRetirementAmount">Annual Retirement Amount</label>
+          <input
+            name="annualRetirementAmount"
+            onChange={e => setAnnualRetirementAmount(e.target.value)}
+            step="500"
+            type="number"
+            value={annualRetirementAmount}
+          />
+        </div>
+
+        <div className="flex flex-col mb-4">
+          <label htmlFor="contributionPercent">Contribution Percent</label>
+          <span className="border font-bold border-gray-500 py-2 px-3">
+            {contributionPercent}
+          </span>
+        </div>
+      </form>
+    </div >
   )
 }
